@@ -9,7 +9,7 @@ services:
       - .:/app
       - maven-repo:/root/.m2
     command: >
-      sh -c "mvn clean test && find target/allure-results -type f -name '*.json' -exec curl -X POST -F 'files[]=@{}' http://allure:5050/allure-docker-service/send-results \\;"
+      sh -c "mvn clean test && find target/allure-results -type f -name '*.*' -exec curl -X POST -F 'files[]=@{}' http://allure:5050/allure-docker-service/send-results \\;"
 
   # Allure backend service
   allure:
