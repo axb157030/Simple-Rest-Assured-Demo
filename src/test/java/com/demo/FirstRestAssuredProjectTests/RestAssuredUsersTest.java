@@ -3,6 +3,8 @@ package com.demo.FirstRestAssuredProjectTests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +72,7 @@ public class RestAssuredUsersTest {
 
 	} 
 	
-	@Epic("Comment API Test")
+	@Epic("Comment APIs Test")
 	@Feature("Getting first post from Comments API")
 	@Story("Play with RestAssured with API that gives a set of comments and testing response after query for first post on comments list from API")
 	@Description("Verify GET /comments and /comments?postId=1 returns status 200 and"
@@ -98,6 +100,31 @@ public class RestAssuredUsersTest {
 	    		+ " then the number of elements directly in all the comments", () -> {
 	        assertTrue(resComments.jsonPath().getList("$").size() > resFirstPost.jsonPath().getList("$").size());
 	    });
+		
+	}
+	
+	@Epic("Comment APIs Test")
+	@Feature("Adding a comment")
+	@Story("Play with RestAssured with API to add a comment. to the list of posts and testing response after query for first post on comments list from API")
+	@Description("Verify POST /comments and /comments returns status 201")
+	@AllureId("3")
+	@Test
+	public void addPostTest() throws JSONException {
+		JSONObject commentRequest = new JSONObject();
+		commentRequest.put("postId", 1);
+		commentRequest.put("name", "Amine's Test Comment");
+		commentRequest.put("email", "Presley.Mueller@myrl.com");
+		commentRequest.put("body", "This is a test comment added via RestAssured.");
+		Response resAddedComment = req.basePath("/comments")
+	       .body(commentRequest.toString())
+	       .post();
+
+		Allure.addAttachment("Add Comment Request", "application/json", commentRequest.toString());
+		Allure.addAttachment("Add Comment Response", "application/json", resAddedComment.asString());
+		Allure.step("Validating status code to add comment should be 201", () -> {
+	        assertEquals(201, resAddedComment.statusCode());
+	    });
+
 		
 	}
 
