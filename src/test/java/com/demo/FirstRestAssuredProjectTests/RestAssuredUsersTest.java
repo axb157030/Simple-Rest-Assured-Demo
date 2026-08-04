@@ -137,9 +137,9 @@ public class RestAssuredUsersTest {
 	public void updateCommentPutTest() throws JSONException {
 		JSONObject updateCommentRequest = new JSONObject();
 		updateCommentRequest.put("postId", 1);
-		updateCommentRequest.put("name", "Amine's Test Put Comment");
+		updateCommentRequest.put("name", "Bob's Test Put Comment");
 		updateCommentRequest.put("email", "Presley.Mueller@myrl.com");
-		updateCommentRequest.put("body", "This is a test comment update via RestAssured.");
+		updateCommentRequest.put("body", "This is a test comment update via a Put request using RestAssured.");
 		Response resUpdateComment = req.basePath("/comments")
 	       .body(updateCommentRequest.toString())
 	       .put("/1");
@@ -191,7 +191,7 @@ public class RestAssuredUsersTest {
 	@Epic("Practice Rest Assured Testing")
 	@Feature("Comments APIs")
 	@Story("Delete Comment")
-	@Description("Validate that a comment can be deleted using DELETE on JSONPlaceholder.")
+	@Description("Validate that a comment can be deleted using DELETE.")
     @Test
     public void deleteCommentTest() {
 
