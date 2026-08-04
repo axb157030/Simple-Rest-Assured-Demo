@@ -35,7 +35,7 @@ Your application will now be available at:
 
 ### Run unit tests
 ```bash
-mvn clean test .
+mvn clean test
 ```
 - This mvn test command also runs the test case and shows also the printed statements in the test case in 
 the terminal

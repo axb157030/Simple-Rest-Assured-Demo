@@ -37,8 +37,8 @@ public class RestAssuredUsersTest {
 
 
 
-	@Epic("API Users Tests")
-	@Feature("Users API")
+	@Epic("Practice Rest Assured Testing")
+	@Feature("Users API Tests")
 	@Story("Play with RestAssured with API that gives a set of users or a specific user")
 	@Description("Verify GET /users/1 returns status 200")
 	@AllureId("1")
@@ -72,8 +72,8 @@ public class RestAssuredUsersTest {
 
 	} 
 	
-	@Epic("Comment APIs Test")
-	@Feature("Getting first post from Comments API")
+	@Epic("Practice Rest Assured Testing")
+	@Feature("Comments APIs test")
 	@Story("Play with RestAssured with API that gives a set of comments and testing response after query for first post on comments list from API")
 	@Description("Verify GET /comments and /comments?postId=1 returns status 200 and"
 			+ "that response of /comments?postId=1 has less elements than response of /comments")
@@ -103,30 +103,113 @@ public class RestAssuredUsersTest {
 		
 	}
 	
-	@Epic("Comment APIs Test")
-	@Feature("Adding a comment")
+	@Epic("Practice Rest Assured Testing")
+	@Feature("Comment API Test")
 	@Story("Play with RestAssured with API to add a comment. to the list of posts and testing response after query for first post on comments list from API")
 	@Description("Verify POST /comments and /comments returns status 201")
 	@AllureId("3")
 	@Test
 	public void addPostTest() throws JSONException {
-		JSONObject commentRequest = new JSONObject();
-		commentRequest.put("postId", 1);
-		commentRequest.put("name", "Amine's Test Comment");
-		commentRequest.put("email", "Presley.Mueller@myrl.com");
-		commentRequest.put("body", "This is a test comment added via RestAssured.");
+		JSONObject addCommentRequest = new JSONObject();
+		addCommentRequest.put("postId", 1);
+		addCommentRequest.put("name", "Amine's Test Comment");
+		addCommentRequest.put("email", "Presley.Mueller@myrl.com");
+		addCommentRequest.put("body", "This is a test comment added via RestAssured.");
 		Response resAddedComment = req.basePath("/comments")
-	       .body(commentRequest.toString())
+	       .body(addCommentRequest.toString())
 	       .post();
 
-		Allure.addAttachment("Add Comment Request", "application/json", commentRequest.toString());
-		Allure.addAttachment("Add Comment Response", "application/json", resAddedComment.asString());
+		Allure.addAttachment("Add Comment Request", "application/json", addCommentRequest.toString());
+		Allure.addAttachment("Add Comment Response", "application/json", resAddedComment.asPrettyString());
 		Allure.step("Validating status code to add comment should be 201", () -> {
 	        assertEquals(201, resAddedComment.statusCode());
 	    });
 
 		
 	}
+	
+	@Epic("Practice Rest Assured Testing")
+	@Feature("Comment API Test")
+	@Story("Play with RestAssured with PUT API to updating a comment.")
+	@Description("Verify PUT /comments and /comments returns status 200")
+	@AllureId("4")
+	@Test
+	public void updateCommentPutTest() throws JSONException {
+		JSONObject updateCommentRequest = new JSONObject();
+		updateCommentRequest.put("postId", 1);
+		updateCommentRequest.put("name", "Amine's Test Put Comment");
+		updateCommentRequest.put("email", "Presley.Mueller@myrl.com");
+		updateCommentRequest.put("body", "This is a test comment update via RestAssured.");
+		Response resUpdateComment = req.basePath("/comments")
+	       .body(updateCommentRequest.toString())
+	       .put("/1");
+
+		Allure.addAttachment("Update Comment Request", "application/json", updateCommentRequest.toString());
+		Allure.addAttachment("Update Comment Response", "application/json", resUpdateComment.asPrettyString());
+		Allure.step("Validating status code to update comment should be 200", () -> {
+	        assertEquals(200, resUpdateComment.statusCode());
+	    });
+	}
+	
+	@Epic("Practice Rest Assured Testing")
+	@Feature("Comment APIs Test")
+	@Story("PATCH Update Comment")
+	@Description("Validate partial update of a comment using PATCH on JSONPlaceholder.")
+    @Test
+    public void updateCommentPatchTest() throws JSONException {
+
+        JSONObject patchCommentRequest = new JSONObject();
+        patchCommentRequest.put("name", "Bob's PATCH Updated Name");
+        patchCommentRequest.put("body", "This is a partial update via PATCH.");
+        Response originalComment = req.basePath("/comments").get("1");
+
+        Response resPatchComment = req
+                .basePath("/comments")
+                .body(patchCommentRequest.toString())
+                .patch("/1");   // IMPORTANT: PATCH must include the ID
+
+        Allure.addAttachment("PATCH Request", "application/json", patchCommentRequest.toString());
+        Allure.addAttachment("PATCH Response", "application/json", resPatchComment.asPrettyString());
+        Allure.addAttachment("GET Response of the Comment", "application/json", originalComment.asString());
+
+        Allure.step("Validating status code should be 200", () -> {
+            assertEquals(200, resPatchComment.statusCode());
+        });
+        
+
+        /*Allure.step("Validating returned fields match the PATCH request by comparing request fields to response fields", () -> {
+            assertEquals(patchCommentRequest.getString("name"), resPatchComment.jsonPath().getString("name"));
+            assertEquals(patchCommentRequest.getString("body"), resPatchComment.jsonPath().getString("body"));
+        });
+        
+        Allure.step("Comparing The comment that existed before patch request was made on it to response received after patch request was made on it. They should have different values.", () -> {
+            assertTrue(originalComment.jsonPath().getString("name") != resPatchComment.jsonPath().getString("name"));
+            assertTrue(originalComment.jsonPath().getString("body") != resPatchComment.jsonPath().getString("body"));
+        }); */
+    }
+	
+	@Epic("Practice Rest Assured Testing")
+	@Feature("Comments APIs")
+	@Story("Delete Comment")
+	@Description("Validate that a comment can be deleted using DELETE on JSONPlaceholder.")
+    @Test
+    public void deleteCommentTest() {
+
+        Response resCommentDelete = req
+                .basePath("/comments")
+                .delete("/1");   // DELETE must include the ID
+
+        Allure.addAttachment("DELETE Response", "application/json", resCommentDelete.asPrettyString());
+
+        Allure.step("Validating status code should be 200", () -> {
+            assertEquals(resCommentDelete.statusCode(), 200);
+        });
+
+        Allure.step("Validating response body is empty JSON {}", () -> {
+            assertEquals(resCommentDelete.asString().trim(), "{}");
+        });
+    }
+    
+
 
 }
-
