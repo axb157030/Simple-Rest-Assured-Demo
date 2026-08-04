@@ -82,7 +82,7 @@ public class RestAssuredUsersTest {
 	public void getFirstPostTest() {
 		req.basePath("/comments");
 		Response resComments = req.get();
-		Response resFirstPost = req.queryParam("postId", 1).get();
+		Response resFirstPost = req.queryParam("postId", 1).when().get();
 		// BUFFER BEFORE AllureRestAssured touches the stream
 		String allCommentsJson = resComments.getBody().asString();
 		String firstPostJson = resFirstPost.getBody().asString();
@@ -90,10 +90,12 @@ public class RestAssuredUsersTest {
 		Allure.addAttachment("All Comments", "application/json", allCommentsJson);
 		Allure.addAttachment("First Post", "application/json", firstPostJson);
 		Allure.step("Validating status code to get comments should be 200", () -> {
-	        assertEquals(200, resComments.statusCode());
+			resComments.then()
+            .statusCode(200);
 	    });
 	    Allure.step("Validating status code to get first spost 200", () -> {
-	        assertEquals(200, resComments.statusCode());
+	    	resFirstPost.then()
+            .statusCode(200);  
 	    });
 	    
 	    Allure.step("Validating that number of elements directly in first post is less"
@@ -117,7 +119,7 @@ public class RestAssuredUsersTest {
 		addCommentRequest.put("body", "This is a test comment added via RestAssured.");
 		Response resAddedComment = req.basePath("/comments")
 	       .body(addCommentRequest.toString())
-	       .post();
+	       .when().post();
 
 		Allure.addAttachment("Add Comment Request", "application/json", addCommentRequest.toString());
 		Allure.addAttachment("Add Comment Response", "application/json", resAddedComment.asPrettyString());
@@ -127,7 +129,7 @@ public class RestAssuredUsersTest {
 
 		
 	}
-	
+
 	@Epic("Practice Rest Assured Testing")
 	@Feature("Comment API Test")
 	@Story("Play with RestAssured with PUT API to updating a comment.")
@@ -142,12 +144,13 @@ public class RestAssuredUsersTest {
 		updateCommentRequest.put("body", "This is a test comment update via a Put request using RestAssured.");
 		Response resUpdateComment = req.basePath("/comments")
 	       .body(updateCommentRequest.toString())
-	       .put("/1");
+	       .when().put("/1");
 
 		Allure.addAttachment("Update Comment Request", "application/json", updateCommentRequest.toString());
 		Allure.addAttachment("Update Comment Response", "application/json", resUpdateComment.asPrettyString());
 		Allure.step("Validating status code to update comment should be 200", () -> {
-	        assertEquals(200, resUpdateComment.statusCode());
+	        resUpdateComment.then()
+            .statusCode(200);
 	    });
 	}
 	
@@ -166,14 +169,16 @@ public class RestAssuredUsersTest {
         Response resPatchComment = req
                 .basePath("/comments")
                 .body(patchCommentRequest.toString())
-                .patch("/1");   // IMPORTANT: PATCH must include the ID
+                .when().patch("/1");   // IMPORTANT: PATCH must include the ID
 
         Allure.addAttachment("PATCH Request", "application/json", patchCommentRequest.toString());
         Allure.addAttachment("PATCH Response", "application/json", resPatchComment.asPrettyString());
         Allure.addAttachment("GET Response of the Comment", "application/json", originalComment.asString());
 
         Allure.step("Validating status code should be 200", () -> {
-            assertEquals(200, resPatchComment.statusCode());
+            resPatchComment.then()
+            .statusCode(200);
+            
         });
         
 
@@ -197,12 +202,14 @@ public class RestAssuredUsersTest {
 
         Response resCommentDelete = req
                 .basePath("/comments")
-                .delete("/1");   // DELETE must include the ID
+                .when().delete("/1");   // DELETE must include the ID
 
         Allure.addAttachment("DELETE Response", "application/json", resCommentDelete.asPrettyString());
 
         Allure.step("Validating status code should be 200", () -> {
             assertEquals(resCommentDelete.statusCode(), 200);
+            resCommentDelete.then()
+            .statusCode(200);
         });
 
         Allure.step("Validating response body is empty JSON {}", () -> {
