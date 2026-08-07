@@ -20,6 +20,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import static org.hamcrest.Matchers.equalTo;
 
 public class RestAssuredUsersTest {
 	
@@ -45,7 +46,7 @@ public class RestAssuredUsersTest {
 	@Test
 	public void getFirstUsersTest() {
 		Allure.step("Calling /users endpoint and getting first element of it");
-		Response res = req.when().get("/users");
+		Response res = req.basePath("/users").when().get();
 		String firstUserJson = res.jsonPath().getMap("[0]").toString();
 		String firstName = res.jsonPath().getString("[0].name");
 		String firstUsername = res.jsonPath().getString("[0].username");
@@ -60,8 +61,8 @@ public class RestAssuredUsersTest {
 	    Allure.step("Validating status code which should be 200", () -> {
 	        assertEquals(200, res.statusCode());
 	    });
-	    Allure.step("Validating first user name", () -> {
-	        assertEquals("Leanne Graham", firstName);
+	    Allure.step("Validating does it contain a name", () -> {
+	        res.then().body("[0].name", equalTo("Leanne Graham"));
 	    });
 	    Allure.step("Validating first user username", () -> {
 	        assertEquals("Bret", firstUsername);
@@ -158,6 +159,7 @@ public class RestAssuredUsersTest {
 	@Feature("Comment APIs Test")
 	@Story("PATCH Update Comment")
 	@Description("Validate partial update of a comment using PATCH on JSONPlaceholder.")
+	@AllureId("5")
     @Test
     public void updateCommentPatchTest() throws JSONException {
 
@@ -197,6 +199,7 @@ public class RestAssuredUsersTest {
 	@Feature("Comments APIs")
 	@Story("Delete Comment")
 	@Description("Validate that a comment can be deleted using DELETE.")
+	@AllureId("6")
     @Test
     public void deleteCommentTest() {
 
